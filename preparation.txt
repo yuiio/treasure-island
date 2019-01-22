@@ -1,0 +1,36 @@
+Départ :
+
+Durant une nuit festive à Port-Royal, vous avez gagnez au jeu une carte maritime au fin fond d'une taverne, si alcolisée que tout le monde est saoul avant même d'avoir commandé son premier verre de rhum. En effet votre adversaire de table n'était autre que "Pimflick jambe de bois", le dernier membre vivant de l'équipage de "Barbe noire" le célèbre pirate qui écuma les mers des Caraïbes. Pimflick n'a pas eu d'autre choix que de vos donner sa carte pour honorer son pari perdu. Mauvais joueur qu'il est, c'est surtout votre mousquet sur son front qu'il l'a convaincu. "Va au diable, pauvre fou !", ce sont ses dernières paroles que vous avez entendu en quittant la taverne.
+
+Grace à la carte de Pimflick, vous venez d'aborder l'île de la tortue, avec la ferme intention de découvrir et de ramener le trésor de Barbe Noir.
+
+
+|  |  |LE|  |  |
+|  |MV|AG|CS|  |
+|  |CA|  |PT|  |
+|  |AV|JG|AV|  |
+|  |  |RU|  |  |
+|TA|EN|JG|EN|SA|
+|  |JG|  |JG|  |
+|VP|EN|  |EN|RU|
+|  |JG|JG|JG|  |
+|  |  |VP|  |  |
+|  |PL|ST|PL|  |
+
+
+
+LE : Trésor (Victoire)
+MV : Horde de pirates Mort Vivants
+AG : Araignée géante
+CS : Horde de Chauves-Souris
+CA : Traversée du Canyon
+PT : Traversée du pont
+AV : Tuile d'avertissement
+NO : Trouve nourriture
+JG : Jungle
+TA : Talisman contre les forces du mal
+SA : Sabre de Barbe Noir
+VP : Vieux pirate
+RU : Rhum
+PL : Plage
+ST : Départ
