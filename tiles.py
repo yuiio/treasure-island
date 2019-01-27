@@ -149,12 +149,14 @@ class PirateTile(MapTile):
         super().__init__(x, y)
 
     def modify_player(self, player):
+
         if not old_pirate.is_at_home and old_pirate.is_alive() and not self.first_time:
             player.hp = player.hp - old_pirate.damage
-            print("""
+            self.first_time = False
+            return """
         Le vieux pirate vous inflige {} de dégat.
         Il vous reste {} points de vie.
-        """.format(old_pirate.damage, player.hp))
+        """.format(old_pirate.damage, player.hp)
         self.first_time = False
 
     def intro_text(self, player):
@@ -203,7 +205,10 @@ class OldPirateTile(PirateTile):
 
     def negociate(self, player):
         if player.offer_rhum():
-            print("""
+            old_pirate.is_at_home = True
+            return """
+        Vous offrez une flasque de rhum.
+
         «Ahhhhh ! Si tu me prends par les sentiments ça change tout...» dit
         le vieux pirate.
 
@@ -212,12 +217,15 @@ class OldPirateTile(PirateTile):
         disparait dans la jungle avec votre rhum en hurlant:
 
         «Rentre chez toi pendant qu'il est encore temps, mousaillon !»
-                """)
-            old_pirate.is_at_home = True
+                """
         else:
-            print("""
-        «C'est tout ce que tu as dans le ventre orchidoclaste !?»
-                """)
+            return """
+        Damned ! Vous n'avez plus de rhum à partager. Cela n'aide pas à délier
+        les langues.
+
+        «C'est tout ce que tu as dans le ventre orchidoclaste !?» réponds le
+        vieux pirate.
+                """
 
     @property
     def is_here(self):
@@ -264,12 +272,14 @@ class HutOldPirateTile(PirateTile):
 
     def negociate(self, player):
         if player.offer_rhum():
-            old_pirate.tell_story()
             old_pirate.is_drunk = True
+            return old_pirate.tell_story()
         else:
-            print("""
-        «Va au diable coprolithe de bac à sable !»
-                """)
+            return """
+        Damned ! Vous n'avez plus de rhum. Cela n'aide pas à délier les langues.
+
+        «Va au diable coprolithe de bac à sable !» vous dit le vieux pirate.
+                """
 
 
     @property
@@ -341,14 +351,14 @@ class EnemyTile(MapTile):
         player.hp = player.hp - damage
         if player.hp < 0:
             player.hp = 0
-        print("""
+        return """
         Cet ennemi vous inflige {} points de dégats.
         Il vous reste {} points de vie.
-        """.format(damage, player.hp))
+        """.format(damage, player.hp)
 
     def modify_player(self, player):
         if self.enemy.is_alive():
-            self.fight_player(player, self.enemy.damage)
+            return self.fight_player(player, self.enemy.damage)
 
     def available_actions(self):
         if self.enemy.is_alive():
@@ -362,11 +372,11 @@ class FindTile(MapTile):
         super().__init__(x, y)
 
     def add_loot(self, player):
-        print("Vous prenez :\n{}".format(self.item))
         player.inventory.append(self.item)
+        return "Vous prenez :\n{}".format(self.item)
 
     def modify_player(self, player):
-        self.add_loot(player)
+        return self.add_loot(player)
 
 class LootTile(FindTile):
     def __init__(self, x, y, item):
@@ -376,7 +386,7 @@ class LootTile(FindTile):
     def modify_player(self, player):
         if not self.loot_claimed:
             self.loot_claimed = True
-            super().modify_player(player)
+            return super().modify_player(player)
 
 class FindRhumTile(FindTile):
     def __init__(self, x, y):
@@ -429,7 +439,7 @@ class FindSwordTile(LootTile):
     def modify_player(self, player):
         if not self.loot_claimed:
             player.has_sword = True
-        super().modify_player(player)
+        return super().modify_player(player)
 
 class WarningTile(MapTile):
 
@@ -467,37 +477,37 @@ class RiverTile(MapTile):
     def modify_player(self, player):
         r = random.random()
         if r < 0.50:
-            print("""
+            return """
         Vous vous dépêchez de nager avant qu'il ne vous arrive malheur.
-            """)
+            """
         elif r < 0.80:
-            print("""
+            player.hp -= 10
+            return """
         Le courant était si fort que vous avez failli vous noyer. En crachant
         de l'eau, vous essayez de reprendre votre souffle malgré les remous.
         Vous ne vous attardez pas car vous êtes pressez de rejoindre la rive.
 
         Cet effort colossal vous coûte 10 points de vie.
-            """)
-            player.hp -= 10
+            """
         elif r < 0.95:
-            print("""
+            player.hp -= 30
+            return """
         Entrainez par un tourbillon, votre tête cogne un rocher au fond de la
         rivière. Le front ensanglanté votre vue se brouille et la douleur vous
         lance. Vous allez chercher loin vos dernières forces pour vite rejoindre
         la berge. C'est miracle que vous n'ayez pas perdu connaissance.
 
         Vous perdez 30 points de vie.
-            """)
-            player.hp -= 30
+            """
         else:
-            print("""
+            player.hp -= 50
+            return """
         En plein milieu de la rivière, vous tombez sur un banc de piranhas.
         À croire qu'ils attendaient pour être sûr que vous ne pourriez pas faire
         marche arrière. L'eau se colore de votre sang ...
 
         ... et vous perdez 50 points de vie.
-            """)
-            player.hp -= 50
+            """
 
 
 class BridgeTile(MapTile):
@@ -516,36 +526,36 @@ class BridgeTile(MapTile):
     def modify_player(self, player):
         r = random.random()
         if r < 0.50:
-            print("""
+            return """
         ... mais finalement vous être trop content de constater que vous allez
         pouvoir utiliser le pont sans dificulté.
-            """)
+            """
         elif r < 0.80:
-            print("""
+            return """
         Le vent se léve et vous perdre l'équilibre. Vous basculez dans le vide
         et réussissez in extremis à vous rattraper d'une main.
         Avec beaucoup d'énergie vous réussissez à vous hisser de nouveau sur le
         pont...
 
         Cet effort colossal vous coûte 10 points de vie.
-            """)
+            """
             player.hp -= 10
         elif r < 0.95:
             if player.has_sword:
-                print("""
+                return """
         Une planchette pourrie céde. Par réflexe vous vous aggripez
         aux lianes des deux mains pour ne pas tomber dans le vide. Dans votre
         précipitation vous lâcher votre sabre.
 
         Votre regard le suit jusqu'à ce qu'il transperce la surface de la
         rivière.
-                """)
+                """
                 for i in player.inventory:
                     if isinstance(i, items.BlackBeardSword ):
                         player.inventory.remove(i)
                 player.has_sword = False
             else:
-                print("""
+                return """
         Le pont céde sous votre propre poids. Vous tombez dans la rivière juste
         au beau milieu d'un banc de pirahnas. L'adrénaline décuple vos forces et
         vous nagez comme un fou pour vous rattrapez à une liane pendante du
@@ -557,12 +567,12 @@ class BridgeTile(MapTile):
         C'était la dernière fois que ce pont transportait quelqu'un.
 
         Vous perdez 30 points de vie.
-            """)
+            """
                 player.hp -= 30
                 self.broken = True
         else:
 
-            print("""
+            return """
         Le pont est trop vieux et pourri pour supporter votre poid.
         Vous vous accrochez aux lianes devant vous, et dans un grand mouvement
         circulaire, vous vous fracassez la tête contre la paroi du canyon.
@@ -572,7 +582,7 @@ class BridgeTile(MapTile):
         C'était la dernière fois que ce pont transportait quelqu'un.
 
         Vous perdez 50 points de vie.
-            """)
+            """
             player.hp -= 50
             self.broken = True
 
@@ -597,14 +607,16 @@ class LivingDeadTile(EnemyTile):
     def modify_player(self, player):
         if self.enemy.is_alive():
             damage = self.enemy.damage
+            feedback = ""
             if player.has_talisman:
-                print("""
+                feedback += """
         Heureusement pour vous, le talisman que vous avez trouvé vous protège
         des puissances maléfiques. Les forces de vos assaillants sont cinq fois
         plus faible.
-                """)
+                """
                 damage /= 5
-            super().fight_player(player, int(damage))
+            feedback += super().fight_player(player, int(damage))
+            return feedback
 
 
 class BatsTile(EnemyTile):
@@ -640,23 +652,22 @@ class BatsTile(EnemyTile):
             self.first_time = False
 
         if self.enemy.is_alive():
+            feedback = ""
             if player.has_sword:
-                print("""
+                feedback += """
         Vous êtes vraiment content d'avoir trouvé ce sabre dans la jungle. Sans
         lui vous n'auriez aucune chance contre cette foule volante aussi dense.
         Certainement qu'il a du appartenir à Barbe Noire lui-même, sans quoi il
         ne serait jamais arrivé ici lui aussi.
-                """)
+                """
             else:
-                print("""
+                feedback += """
         Une angoisse vous saisie : avec juste un mousquet de pirate si lent à
         recharger et une dague, vous vous dîtes que cela va être compliqué de
         faire face à ce nuage de chauves-souris sanguinaire...
-                """)
-            super().fight_player(player, self.enemy.damage)
-            # player.hp = player.hp - self.enemy.damage
-            # print("Cet ennenmi vous inflige {} points de dégats. Il vous reste {} points de vie.".
-            #       format(self.enemy.damage, player.hp))
+                """
+            feedback += super().fight_player(player, self.enemy.damage)
+            return feedback
         else:
             # Le combat est terminé on restaure les armes à leur valeur initiale
             musket = self.get_weapon(player, items.PirateMusket)
@@ -701,9 +712,10 @@ class LeavingTile(EnemyTile):
 
     def modify_player(self, player):
         if self.enemy.is_alive():
-            super().fight_player(player, self.enemy.damage)
+            return super().fight_player(player, self.enemy.damage)
         else:
-            print("""
+            player.victory = True
+            return """
         Vous pénétrez dans la cavité rocheuse heureusement peut profonde. Le peu
         de lumière suffit pour entrevoir un vieux coffre qui semble dormir ici
         depuis des siècles recouvert pour une couverture de toile d'araignée.
@@ -719,5 +731,4 @@ class LeavingTile(EnemyTile):
 
 
         VICTOIRE ! Le trèsor de barbe noire est désormais votre.
-        """)
-            player.victory = True
+        """

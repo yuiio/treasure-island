@@ -51,7 +51,8 @@ class OldPirate(Enemy):
 
     def tell_story(self):
         txt = """
-        «Sacrebleu ! Je l'ai vu ce maudit trésor !
+        «Merci pour le rhum l'ami ...
+        Et même je vais te dir que Sacrebleu ! Je l'ai vu ce maudit trésor !
         Mais en plus de mes dents je perds la boule aussi, j'suis trop vieux. Je
         m'rappelle plus où il est...»
         {}
@@ -63,7 +64,7 @@ class OldPirate(Enemy):
         else:
             self.story = 0
 
-        print(txt)
+        return txt
 
 class Jaguar(Enemy):
     def __init__(self):

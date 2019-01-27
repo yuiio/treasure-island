@@ -50,10 +50,12 @@ class Game:
             if self.player.drunkness > 0 and self.last_input != "b":
                 self.player.drunkness *= 0.85 if self.player.drunkness>0.5 else 0
 
-            # Voir l'inventaire n'est pas considéré comme agissant dans le jeu
-            if self.last_input != "i":
+            # Le joueur est impacté par de son nouvel environnement
+            if self.last_input != "i": # Voir l'inventaire n'est pas considéré comme agissant dans le jeu
                 print('[ MODIFY PLAYER ]')
-                room.modify_player(self.player)
+                feedback_modify_player = room.modify_player(self.player)
+                if feedback_modify_player is not None:
+                    print(feedback_modify_player)
 
             if self.player.is_alive() and not self.player.victory:
 
@@ -75,7 +77,7 @@ class Game:
                     for action in available_actions:
                         if action_input == action.hotkey:
                             print('[ PLAYER DO ACTION RESULT ]')
-                            self.player.do_action(action, **action.kwargs)
+                            print(self.player.do_action(action, **action.kwargs))
                             correct_input = True
                             self.last_input = action.hotkey
                             break

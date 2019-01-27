@@ -19,11 +19,12 @@ class Player():
         return self.hp > 0
 
     def print_inventory(self):
-        print("""
+        lines = ["""
     Inventaire :
-    """)
+    """]
         for item in self.inventory:
-            print(item)
+            lines.append(str(item))
+        return '\n'.join(lines)
 
     def move(self, dx, dy):
         self.x += dx
@@ -54,23 +55,24 @@ class Player():
                     max_dmg = i.damage
                     best_weapon = i
 
-        print("""
-        Vous utilisez {} contre {} !
-        """.format(best_weapon.name, enemy.name), end="")
+        feedback = ["""
+        Vous utilisez votre {} contre : {} !
+        """.format(best_weapon.name, enemy.name)]
         damage = self.get_drunk_damage(best_weapon.damage)
-        if self.drunkness > 0:
-            print("""
+        if best_weapon.damage - damage > 0:
+            feedback.append("""
         (Vous avez un malus de -{} de dégats à cause du rhum...)
-        """.format(best_weapon.damage - damage), end="")
+        """.format(best_weapon.damage - damage))
         enemy.hp -= damage
         if not enemy.is_alive():
-            print("""
-        Vous avez tué {} !
+            feedback.append("""
+        Vous avez tué : {} !
         """.format(enemy.name))
         else:
-            print("""
+            feedback.append("""
         {} a {} points de vie.
         """.format(enemy.name, enemy.hp))
+        return "\n".join(feedback)
 
     def get_drunk_damage(self, damage):
         """Calcul les dégats d'une arme en fonction de l'alcolémie du joueur"""
@@ -87,14 +89,8 @@ class Player():
         rhum = self.has_rhum()
         if rhum is not None:
             self.inventory.remove(rhum)
-            print("""
-        Vous offrez une flasque de rhum.
-        """)
             return True
         else:
-            print("""
-        Damned ! Vous n'avez plus de rhum. Cela n'aide pas à délier les langues.
-        """)
             return False
 
     def drink_rhum(self):
@@ -102,43 +98,44 @@ class Player():
         if rhum is not None:
             self.inventory.remove(rhum)
             if self.drunkness < 1:
-                print("""
+                self.hp += 20
+                feedback =  """
         Les pirates ça tournent au ruhm.
         Rien de tel qu'un petit remontant pour prendre des forces !
         Vous récupérez 20 points de vie.
-        """)
-                self.hp += 20
+        """
             elif self.drunkness < 3:
-                print("""
+                self.hp += 5
+                feedback =  """
         «Allez encore une petite lampée pour la route !»
         Vous récupérez 5 points de vie.
-        """)
-                self.hp += 5
+        """
             elif self.drunkness < 4:
-                print("""
+                feedback =  """
         «Râaallez 'core une ch'tite rampée pour la loute !»
-        """)
+        """
             elif self.drunkness < 5:
-                print("""
+                self.hp -= 5
+                feedback =  """
         «Encore le dernier de les derniers et après je va allé»
         Votre foie commence à saturé. Vous perdez 5 points de vie.
-        """)
-                self.hp -= 5
+        """
             elif self.drunkness >=5:
                 drunk_damage = int(round(self.drunkness * 3))
-                print("""
+                self.hp -= drunk_damage
+                feedback =  """
         Vous vomissez partout.
         Vous perdez {} points de vie.
-        """.format(drunk_damage))
-                self.hp -= drunk_damage
+        """.format(drunk_damage)
             self.drunkness += 1
         else:
-            print("""
+            feedback =  """
         Bon sang ! Vous n'avez plus de rhum.
-        """)
+        """
+        return feedback
 
     def negociate(self, tile):
-        tile.negociate(self)
+        return tile.negociate(self)
 
     def flee(self, tile):
         """Moves the player randomly to an adjacent tile"""
@@ -156,19 +153,19 @@ class Player():
                 break
 
         if not flee_success:
-            print("""
+            return """
         Pas de fuite en arrière possibe !
-        """)
+        """
 
     def print_map(self, world_map):
-        print("""
+        the_map = ["""
 Carte :
     N
     ↑
  O ←✛→ E
     ↓
     S
-""")
+"""]
         for y, row in enumerate(world_map):
             line = ["        "]
             print_empty = False
@@ -187,10 +184,11 @@ Carte :
                     line.append(" ")
             out_line = " ".join(line)
             if "." in out_line or "X" in out_line or print_empty:
-                print(out_line)
+                the_map.append(out_line)
+        return "\n".join(the_map)
 
     def do_action(self, action, **kwargs):
         action_method = getattr(self, action.method.__name__)
         if action_method:
-            action_method(**kwargs)
+            return action_method(**kwargs)
 
