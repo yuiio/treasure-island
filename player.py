@@ -19,11 +19,13 @@ class Player():
         return self.hp > 0
 
     def print_inventory(self):
-        lines = ["""
-    Inventaire :
-    """]
+        lines = ["\nInventaire :"]
         for item in self.inventory:
-            lines.append(str(item))
+            item_txt = str(item)
+            lines.append("    - {}{}".format(
+                item_txt[0].upper(),
+                item_txt[1:])
+                )
         return '\n'.join(lines)
 
     def move(self, dx, dy):
@@ -55,23 +57,18 @@ class Player():
                     max_dmg = i.damage
                     best_weapon = i
 
-        feedback = ["""
-        Vous utilisez votre {} contre : {} !
-        """.format(best_weapon.name, enemy.name)]
+        feedback = ["Vous utilisez votre {} contre : {}.".format(
+            best_weapon.name,
+            enemy.name
+            )]
         damage = self.get_drunk_damage(best_weapon.damage)
         if best_weapon.damage - damage > 0:
-            feedback.append("""
-        (Vous avez un malus de -{} de dégats à cause du rhum...)
-        """.format(best_weapon.damage - damage))
+            feedback.append("(Vous avez un malus de -{} de dégats à cause du rhum...)".format(best_weapon.damage - damage))
         enemy.hp -= damage
         if not enemy.is_alive():
-            feedback.append("""
-        Vous avez tué : {} !
-        """.format(enemy.name))
+            feedback.append("Vous avez tué : {} !".format(enemy.name))
         else:
-            feedback.append("""
-        {} a {} points de vie.
-        """.format(enemy.name, enemy.hp))
+            feedback.append("{} a {} points de vie.".format(enemy.name, enemy.hp))
         return "\n".join(feedback)
 
     def get_drunk_damage(self, damage):
@@ -99,39 +96,22 @@ class Player():
             self.inventory.remove(rhum)
             if self.drunkness < 1:
                 self.hp += 20
-                feedback =  """
-        Les pirates ça tournent au ruhm.
-        Rien de tel qu'un petit remontant pour prendre des forces !
-        Vous récupérez 20 points de vie.
-        """
+                feedback =  "Les pirates ça tournent au ruhm.\nRien de tel qu'un petit remontant pour prendre des forces !\n\nVous récupérez 20 points de vie."
             elif self.drunkness < 3:
                 self.hp += 5
-                feedback =  """
-        «Allez encore une petite lampée pour la route !»
-        Vous récupérez 5 points de vie.
-        """
+                feedback = "«Allez encore une petite lampée pour la route !»\nVous récupérez 5 points de vie."
             elif self.drunkness < 4:
-                feedback =  """
-        «Râaallez 'core une ch'tite rampée pour la loute !»
-        """
+                feedback = "«Râaallez 'core une ch'tite rampée pour la loute !»"
             elif self.drunkness < 5:
                 self.hp -= 5
-                feedback =  """
-        «Encore le dernier de les derniers et après je va allé»
-        Votre foie commence à saturé. Vous perdez 5 points de vie.
-        """
+                feedback = "«Encore le dernier de les derniers et après je va allé»\nVotre foie commence à saturé. Vous perdez 5 points de vie."
             elif self.drunkness >=5:
                 drunk_damage = int(round(self.drunkness * 3))
                 self.hp -= drunk_damage
-                feedback =  """
-        Vous vomissez partout.
-        Vous perdez {} points de vie.
-        """.format(drunk_damage)
+                feedback = "Vous vomissez partout.\nVous perdez {} points de vie.".format(drunk_damage)
             self.drunkness += 1
         else:
-            feedback =  """
-        Bon sang ! Vous n'avez plus de rhum.
-        """
+            feedback =  "Bon sang ! Vous n'avez plus de rhum."
         return feedback
 
     def negociate(self, tile):
@@ -153,13 +133,10 @@ class Player():
                 break
 
         if not flee_success:
-            return """
-        Pas de fuite en arrière possibe !
-        """
+            return "Pas de fuite en arrière possibe !"
 
     def print_map(self, world_map):
         the_map = ["""
-Carte :
     N
     ↑
  O ←✛→ E

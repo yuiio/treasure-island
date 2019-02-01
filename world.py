@@ -51,7 +51,11 @@ def is_dsl_valid(dsl):
     return True
 
 def create_world():
-    global starting_position
+    global starting_position, world_map
+
+    # Reset datas for new game when game is over
+    world_map = []
+    starting_position = None
 
     if not is_dsl_valid(world_dsl):
         raise SyntaxError("DSL is invalid!")
